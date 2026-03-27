@@ -656,7 +656,7 @@ function cpsClick() {
 }
 
 function cpsReset() {
-  cpsRun=false; cpsClicks=0;
+  clearInterval(cpsTick); cpsRun=false; cpsClicks=0;
   document.getElementById('cps-box').classList.remove('run');
   document.getElementById('cps-big').textContent='0';
   document.getElementById('cps-sub').textContent='클릭해서 시작 (5초)';
