@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://260324-l2a8242tz-dbinform11-8769s-projects.vercel.app/sitemap.xml
