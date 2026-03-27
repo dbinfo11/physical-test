@@ -269,7 +269,7 @@
     <button onclick="show('aim',this)">🎯 조준 트레이닝</button>
     <button onclick="show('cps',this)">👊 연속 클릭</button>
     <button onclick="show('mole',this)">🐹 두더지 잡기</button>
-    <button onclick="show('nk',this)">🔵 1→30 클릭</button>
+    <button onclick="show('nk',this)">🔵 1→20 클릭</button>
     <div class="nav-sep"></div>
     <span class="nav-lbl">인지·기억</span>
     <button onclick="show('flash',this)">👁️ 순간 포착</button>
@@ -381,12 +381,11 @@
 <!-- NUMBER CLICK -->
 <div id="g-nk" class="panel">
   <div class="card">
-    <h2>🔵 1→30 순서 클릭</h2>
-    <p class="desc">흩어진 1~30 숫자를 순서대로 클릭! <strong>1</strong>을 클릭하면 타이머 시작. 틀리면 감점 없이 빨간 깜빡임.</p>
+    <h2>🔵 1→20 순서 클릭</h2>
+    <p class="desc">흩어진 1~20 숫자를 순서대로 클릭! <strong>1</strong>을 클릭하면 타이머 시작. 힌트 없이 직접 찾아서 클릭!</p>
     <div class="srow">
       <div class="sbox"><div class="lbl">현재 기록</div><div class="val" id="nk-cur">-</div></div>
       <div class="sbox"><div class="lbl">최고 기록</div><div class="val" id="nk-best">-</div></div>
-      <div class="sbox"><div class="lbl">다음 숫자</div><div class="val" id="nk-next">-</div></div>
     </div>
     <div id="nk-status">게임을 시작하면 1번부터 순서대로 클릭하세요</div>
     <div id="nk-arena"></div>
@@ -394,8 +393,8 @@
     <div id="nk-badge"></div>
   </div>
   <div class="info-box">
-    <h3>🔵 1→30 숫자 순서 클릭이란?</h3>
-    <p>흩어진 1~30 숫자를 순서대로 클릭하는 게임으로, 집중력·시야 범위·숫자 인식 속도를 동시에 측정합니다. 슐테 표(Schulte Table)와 유사한 원리로, 주변 시야를 넓게 유지하며 다음 숫자를 미리 예측하는 것이 핵심 전략입니다.</p>
+    <h3>🔵 1→20 숫자 순서 클릭이란?</h3>
+    <p>흩어진 1~20 숫자를 힌트 없이 순서대로 클릭하는 게임으로, 집중력·시야 범위·숫자 인식 속도를 동시에 측정합니다. 슐테 표(Schulte Table)와 유사한 원리로, 주변 시야를 넓게 유지하며 다음 숫자를 미리 예측하는 것이 핵심 전략입니다.</p>
     <p>집중력 훈련과 속독 연습에도 활용되는 방법입니다. 20초 이내 클리어를 목표로 도전해 보세요.</p>
     <div class="tags"><span class="tag">숫자 클릭 게임</span><span class="tag">슐테 표</span><span class="tag">집중력 훈련</span><span class="tag">시야 범위 테스트</span></div>
   </div>
@@ -1005,9 +1004,8 @@ function startNk() {
   nkState='idle'; nkNext=1;
   clearInterval(nkTick);
   document.getElementById('nk-btn').style.display='none';
-  document.getElementById('nk-next').textContent='1';
   document.getElementById('nk-cur').textContent='-';
-  document.getElementById('nk-status').textContent='파란 동그라미 1번을 클릭해서 시작!';
+  document.getElementById('nk-status').textContent='1번부터 순서대로 클릭! 힌트 없이 직접 찾으세요';
   document.getElementById('nk-badge').innerHTML='';
   buildNkArena();
 }
@@ -1018,16 +1016,16 @@ function buildNkArena() {
   // Wait for layout then build
   requestAnimationFrame(()=>{
     const W=arena.offsetWidth, H=arena.offsetHeight;
-    const cols=6, rows=5, sz=50, pad=8;
+    const cols=5, rows=4, sz=50, pad=8;
     const cw=W/cols, ch=H/rows;
-    const nums=Array.from({length:30},(_,i)=>i+1);
+    const nums=Array.from({length:20},(_,i)=>i+1);
     for(let i=nums.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[nums[i],nums[j]]=[nums[j],nums[i]];}
     nums.forEach((n,idx)=>{
       const col=idx%cols, row=Math.floor(idx/cols);
       const cx=col*cw+pad+Math.random()*Math.max(0,cw-sz-pad*2);
       const cy=row*ch+pad+Math.random()*Math.max(0,ch-sz-pad*2);
       const el=document.createElement('div');
-      el.className='nt-num'+(n===1?' next':'');
+      el.className='nt-num';
       el.style.left=Math.round(cx)+'px';
       el.style.top=Math.round(cy)+'px';
       el.textContent=n; el.dataset.n=n;
@@ -1049,18 +1047,13 @@ function nkClick(n) {
     const el=document.querySelector(`.nt-num[data-n="${n}"]`);
     if(el) el.className='nt-num done';
     nkNext++;
-    if(nkNext<=30) {
-      document.getElementById('nk-next').textContent=nkNext;
-      const nxt=document.querySelector(`.nt-num[data-n="${nkNext}"]`);
-      if(nxt) nxt.classList.add('next');
-    } else {
+    if(nkNext>20) {
       clearInterval(nkTick);
       nkState='done';
       const ms=Date.now()-nkStart;
       const t=nkFmt(ms);
       document.getElementById('nk-status').textContent='완료! '+t;
       document.getElementById('nk-cur').textContent=t;
-      document.getElementById('nk-next').textContent='-';
       if(nkBest===null||ms<nkBest){nkBest=ms;document.getElementById('nk-best').textContent=t;}
       const bd=document.getElementById('nk-badge');
       if(ms<15000)      bd.innerHTML='<span class="badge b-great">놀라운 속도! 최상위권</span>';
@@ -1072,7 +1065,7 @@ function nkClick(n) {
     }
   } else {
     const el=document.querySelector(`.nt-num[data-n="${n}"]`);
-    if(el&&!el.classList.contains('done')&&!el.classList.contains('next')){
+    if(el&&!el.classList.contains('done')){
       el.classList.add('wrong');
       setTimeout(()=>el.classList.remove('wrong'),280);
     }
